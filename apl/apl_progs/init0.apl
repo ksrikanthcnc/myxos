@@ -1,0 +1,79 @@
+integer main()
+{
+	integer status,one,two,three,zero,zerotwo,onethree,file,all,index;
+	string word,a,b,c,d,ac,bd;
+	status=Fork();
+	if(status==-2)then
+		status=Fork();
+		if(status==-2)then
+			status=Create("0.dat");
+			print("0-create");
+			file=Open("0.dat");
+			index=1;
+			while(index<100)do
+				if(index%4==0)then
+					status=Write(file,index);
+				endif;
+				index=index+1;
+			endwhile;
+			print("0-wrote");
+			status=Close(file);
+			Exit();
+		else
+			status=Create("1.dat");
+			print("1-create");
+			file=Open("1.dat");
+			index=0;
+			while(index<100)do
+				if(index%4==1)then
+					status=Write(file,index);
+				endif;
+				index=index+1;
+			endwhile;
+			print("1-wrote");
+			status=Close(file);
+			Exit();
+		endif;
+	else
+		status=Fork();
+		if(status==-2)then
+			status=Create("2.dat");
+			print("2-create");
+			file=Open("2.dat");
+			index=0;
+			while(index<100)do
+				if(index%4==2)then
+					status=Write(file,index);
+				endif;
+				index=index+1;
+			endwhile;
+			print("2-wrote");
+			status=Close(file);
+			Exit();
+		else
+			status=Create("3.dat");
+			print("3-create");
+			file=Open("3.dat");
+			index=0;
+			while(index<100)do
+				if(index%4==3)then
+					status=Write(file,index);
+				endif;
+				index=index+1;
+			endwhile;
+			print("3-wrote");
+			status=Close(file);
+		endif;
+	endif;	
+	
+	file=0;
+	while(file<20)do
+		file=file+1;
+	endwhile;	
+	
+print("init1-end");
+print("");
+status=Exec("init1.xsm");
+	
+return 0;
+}

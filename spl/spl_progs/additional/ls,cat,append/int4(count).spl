@@ -1,0 +1,92 @@
+//print("-------------------");
+//print("In INT 4");
+
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo=[physicalSP-1];
+
+alias word S3;
+word=[physicalSP-3];
+
+alias fileindex S2;
+fileindex=[physicalSP-4];
+
+alias SWOFTindex S4;
+alias PPOFTindex S5;
+alias currentPID S6;
+alias currentPCB S7;
+alias lseek S8;
+alias DBindex S9;
+alias DBphysical S10;
+alias FATindex S11;
+alias PPOFTphysical S12;
+alias SWOFTphysical S13;
+alias FATphysical S14;
+alias index S15;
+
+
+//Write()
+if(sysCallNo==5)then
+alias lseek S1;
+//print("WRITE");
+//print("valid?");
+	if(fileindex<0||fileindex>7)then
+		//print("invalid");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("PPOFT?");
+	currentPID = (PTBR - 1024) / 8;	
+	currentPCB = READY_LIST + 32 * currentPID;
+	PPOFTindex=fileindex;
+	PPOFTphysical=currentPCB+15;
+	if([PPOFTphysical+2*PPOFTindex]==-1)then
+		//print("!PPOFT");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+//print("count");
+alias count S2;
+	count=0;
+//print("PPOFT");	
+	lseek=0;
+//print("SWOFT");
+	SWOFTphysical=FILE_TABLE;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+//print("FAT");
+	FATindex=[SWOFTphysical];
+	FATphysical=FAT+FATindex*8;
+//print("load BB");
+
+	while(1==1)do
+		load(1,[FATphysical+2]);
+		DBindex=lseek/512;
+		DBphysical=512+DBindex;
+		if([DBphysical]==-1)then
+			//print("end-1");
+			break;
+		endif;
+		if([DBphysical]=="")then
+			//print("end ");
+			break;
+		endif;
+		load(1,[DBphysical]);
+		index=512;
+		while(index<1024)do
+			if([index]==word)then
+				count=count+1;
+			endif;
+			lseek=lseek+1;
+			index=index+1;
+		endwhile;
+	endwhile;
+
+	[physicalSP-2]=count;
+//print("!WRITE");
+	ireturn;
+	
+endif;

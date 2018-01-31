@@ -1,0 +1,55 @@
+/home/srikanth/myxos/spl/spl --int=1 /home/srikanth/myxos/spl/spl_progs/int1.spl
+/home/srikanth/myxos/spl/spl --int=2 /home/srikanth/myxos/spl/spl_progs/int2.spl
+/home/srikanth/myxos/spl/spl --int=3 /home/srikanth/myxos/spl/spl_progs/int3.spl
+/home/srikanth/myxos/spl/spl --int=4 /home/srikanth/myxos/spl/spl_progs/int4.spl
+/home/srikanth/myxos/spl/spl --int=5 /home/srikanth/myxos/spl/spl_progs/int5.spl
+/home/srikanth/myxos/spl/spl --int=6 /home/srikanth/myxos/spl/spl_progs/int6.spl
+/home/srikanth/myxos/spl/spl --int=7 /home/srikanth/myxos/spl/spl_progs/int7.spl
+/home/srikanth/myxos/spl/spl --int=timer /home/srikanth/myxos/spl/spl_progs/timer.spl
+/home/srikanth/myxos/spl/spl --exhandler /home/srikanth/myxos/spl/spl_progs/exhandler.spl
+/home/srikanth/myxos/spl/spl --os /home/srikanth/myxos/spl/spl_progs/os_startup.spl
+/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/init.apl
+cd /home/srikanth/myxos/xfs-interface/
+/home/srikanth/myxos/xfs-interface/xfs-interface load --os /home/srikanth/myxos/spl/spl_progs/os_startup.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=1 /home/srikanth/myxos/spl/spl_progs/int1.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=2 /home/srikanth/myxos/spl/spl_progs/int2.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=3 /home/srikanth/myxos/spl/spl_progs/int3.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=4 /home/srikanth/myxos/spl/spl_progs/int4.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=5 /home/srikanth/myxos/spl/spl_progs/int5.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=6 /home/srikanth/myxos/spl/spl_progs/int6.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=7 /home/srikanth/myxos/spl/spl_progs/int7.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=timer /home/srikanth/myxos/spl/spl_progs/timer.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --init /home/srikanth/myxos/apl/apl_progs/init.xsm
+cd /home/srikanth/myxos/xsm
+./xsm
+
+
+
+
+/home/srikanth/myxos/spl/spl --int=1 /home/srikanth/myxos/spl/spl_progs/int1.spl
+/home/srikanth/myxos/spl/spl --int=2 /home/srikanth/myxos/spl/spl_progs/int2.spl
+/home/srikanth/myxos/spl/spl --int=3 /home/srikanth/myxos/spl/spl_progs/int3.spl
+/home/srikanth/myxos/spl/spl --int=4 /home/srikanth/myxos/spl/spl_progs/int4.spl
+/home/srikanth/myxos/spl/spl --int=5 /home/srikanth/myxos/spl/spl_progs/int5.spl
+/home/srikanth/myxos/spl/spl --int=6 /home/srikanth/myxos/spl/spl_progs/int6.spl
+/home/srikanth/myxos/spl/spl --int=7 /home/srikanth/myxos/spl/spl_progs/int7.spl
+/home/srikanth/myxos/spl/spl --int=timer /home/srikanth/myxos/spl/spl_progs/timer.spl
+/home/srikanth/myxos/spl/spl --exhandler /home/srikanth/myxos/spl/spl_progs/exhandler.spl
+/home/srikanth/myxos/spl/spl --os /home/srikanth/myxos/spl/spl_progs/os_startup.spl
+/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/odd.apl
+/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/even.apl
+cd /home/srikanth/myxos/xfs-interface/
+/home/srikanth/myxos/xfs-interface/xfs-interface load --os /home/srikanth/myxos/spl/spl_progs/os_startup.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=1 /home/srikanth/myxos/spl/spl_progs/int1.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=2 /home/srikanth/myxos/spl/spl_progs/int2.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=3 /home/srikanth/myxos/spl/spl_progs/int3.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=4 /home/srikanth/myxos/spl/spl_progs/int4.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=5 /home/srikanth/myxos/spl/spl_progs/int5.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=6 /home/srikanth/myxos/spl/spl_progs/int6.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=7 /home/srikanth/myxos/spl/spl_progs/int7.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --int=timer /home/srikanth/myxos/spl/spl_progs/timer.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --init /home/srikanth/myxos/apl/apl_progs/init.xsm
+/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/even.xsm
+cd /home/srikanth/myxos/xsm
+./xsm
+

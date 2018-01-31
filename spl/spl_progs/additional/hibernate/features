@@ -1,0 +1,4 @@
+int1	hibernate
+int7	shut-down
+OS		hib-vs-shut
+timer	hib

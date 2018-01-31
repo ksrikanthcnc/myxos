@@ -1,0 +1,129 @@
+//print("OS started");
+//print("EXCEPTION");
+//print("TIMER");
+//print("INTs");
+alias counter S0;
+counter=0;
+while(counter<18)do
+	load(7+counter,1+counter);
+	counter=counter+1;
+endwhile;
+//print("FAT,DF");
+load(5,19);
+load(6,20);
+//print("INIT");
+//load(25,21);
+//load(26,22);
+//load(27,23);
+
+load(25,447);
+if([25*512+32]==0)then
+	//print("swap");
+	alias counter S0;			
+	counter = 448;
+	while ( counter <  512) do			
+		[ DISK_LIST + counter] = 0;	
+		counter = counter + 1;			
+	endwhile;
+	store(6,20);
+
+	//print("SWOFT init");
+	counter = 0;
+	while ( counter <  128) do			
+		[ FILE_TABLE + counter + 0] = -1;	
+		[ FILE_TABLE + counter + 1] =  0;	
+		counter = counter + 2;			
+	endwhile;
+
+	//print("MF");
+	counter = 0;
+	while ( counter < 29 ) do			
+		[ 1280 + counter] = 1;	
+		counter = counter + 1;			
+	endwhile;
+	[1280 + 25]=0;
+	[1280 + 26]=0;
+	[1280 + 27]=0;
+	while ( counter < 64 ) do			
+		[ 1280 + counter] = 0;	
+		counter = counter + 1;			
+	endwhile;
+
+	//print("PCBs");
+	counter=0;
+	while ( counter < 32 ) do			
+		[ READY_LIST + 32*counter + 1] = 0;	
+	//	[ READY_LIST + 32*counter + 0] = counter;	///////////////
+		counter = counter + 1;			
+	endwhile;
+
+	//print("PID=0");
+	[READY_LIST + 0] = 0;
+	//print("init's");///////////////////////////////
+	[READY_LIST + 1] = 2;
+	[READY_LIST + 2] = 3*512;
+	[READY_LIST + 3] = 3*512;
+	[READY_LIST + 4] = 0;
+	[READY_LIST + 5] = 1024;
+	[READY_LIST + 6] = 4;
+	//print("PPID=0");
+	[READY_LIST + 31] = 0;
+
+	//print("PTBR");
+	PTBR=1024;
+	PTLR=4;
+	[PTBR+0]=21;
+	[PTBR+1]="00";
+	[PTBR+2]=22;
+	[PTBR+3]="00";
+	[PTBR+4]=23;
+	[PTBR+5]="00";
+	[PTBR+6]=28;
+	[PTBR+7]="01";
+
+	//print("PPOFT");
+	alias count S0;
+	count=15;
+	while(count<31)do
+		[READY_LIST+count]=-1;
+		count=count+1;
+	endwhile;
+
+	//print("SP,IP");
+	SP=3*512;
+	[28*512]=0;
+endif;
+if([25*512+32]==1)then
+//print("hibernate");
+	PTBR=[25*512+5];
+	PTLR=4;
+	load(2,444);
+	load(3,445);
+	load(4,446);
+alias currentPID S0;
+alias currentPCB S1;
+	currentPID = (PTBR - 1024) / 8;
+	currentPCB = READY_LIST + 32 * currentPID;
+//alias counter S2;
+//	counter=0;
+//	while(counter<32)do
+//		[currentPCB+counter]=[25*512+counter];
+//		counter=counter+1;
+//	endwhile;
+	BP=[currentPCB+2];
+	SP=[currentPCB+3];
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+	[physicalSP]=[currentPCB+4];
+	counter=PAGE_TABLE;
+	while(counter<PAGE_TABLE+128)do
+		if([counter+1]=="01"||[counter+1]=="11")then
+			load([counter],405+[counter]-25);
+		endif;
+		counter=counter+2;
+	endwhile;
+endif;
+
+//print("!OS");
+ireturn;

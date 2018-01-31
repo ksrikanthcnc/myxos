@@ -1,0 +1,6 @@
+modifyfork such that the file pointers openedd by parent process are shared by chld procss
+thus any write/read to the file must advance both pointerss
+
+
+
+

@@ -1,0 +1,13 @@
+integer main()
+{
+	integer a,q;
+	a=0;
+	while(a<10)do
+		print("############");
+		q=Signal();
+		a=a+1;
+	endwhile;
+print("ONE");
+breakpoint;
+	return 0;
+}
