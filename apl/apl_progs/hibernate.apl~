@@ -1,0 +1,5 @@
+integer main(){
+	integer status;
+	status=Open("hibernate");
+return 0;
+}

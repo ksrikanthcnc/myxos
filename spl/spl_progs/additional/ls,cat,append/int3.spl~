@@ -1,0 +1,138 @@
+//print("-------------------");
+//print("In INT 3");
+
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo=[physicalSP-1];
+
+alias arg S3;
+arg=[physicalSP-3];
+
+alias fileindex S2;
+fileindex=[physicalSP-4];
+
+alias SWOFTphysical S4;
+alias PPOFTphysical S5;
+alias currentPID S6;
+alias currentPCB S7;
+alias DB S8;
+alias FATphysical S9;
+alias FATindex S10;
+alias size S11;
+alias SWOFTindex S12;
+alias PPOFTindex S13;
+alias lseek S14;
+
+
+//Seek()
+if(sysCallNo==6)then
+//print("SEEK");
+//print("valid?");
+	if(fileindex<0||fileindex>7)then
+		//print("invalid");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("PPOFT?");
+	currentPID = (PTBR - 1024) / 8;	
+	currentPCB = READY_LIST + 32 * currentPID;
+	PPOFTphysical=currentPCB+15;
+	if([PPOFTphysical+2*fileindex]==-1)then
+		//print("!PPOFT");
+//
+print("");
+alias i S15;
+print("**Open**");
+i=0;
+	print("~~~~~~");
+	print("file");
+	print("index");
+while(i<8)do
+	PPOFTindex=i;
+	PPOFTphysical=currentPCB+15;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+	if([PPOFTphysical]==-1)then
+		i=i+1;
+		continue;
+	endif;
+	SWOFTphysical=1344;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+	print
+	print([FAT+[SWOFTphysical]*8]);
+	print(PPOFTindex);
+	i=i+1;
+endwhile;
+print("");
+//
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+	PPOFTindex=fileindex;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+//print("SWOFT");
+	SWOFTphysical=1344;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+//print("FAT");
+	FATindex=[SWOFTphysical];
+	FATphysical=FAT+FATindex*8;
+	size=[FATphysical+1];
+//print("lseek?");
+	if(arg<0||arg>size-1)then
+		//print("!lseek");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("lseek=");
+	[PPOFTphysical+1]=arg;
+	[physicalSP-2]=0;
+	ireturn;
+endif;
+
+if(sysCallNo==7)then
+//Read()
+//print("READ");
+//print("valid?");
+	if(fileindex<0||fileindex>7)then
+		//print("invalid");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("PPOFT?");
+	currentPID = (PTBR - 1024) / 8;	
+	currentPCB = READY_LIST + 32 * currentPID;
+	PPOFTindex=fileindex;
+	PPOFTphysical=currentPCB+15;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+	if([PPOFTphysical]==-1)then
+		//print("!PPOFT");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+	lseek=[PPOFTphysical+1];
+//print("SWOFT");	
+	SWOFTphysical=1344;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+//print("FAT");
+	FATindex=[SWOFTphysical];
+	FATphysical=FAT+FATindex*8;
+	load(1,[FATphysical+2]);
+	DB=512+lseek/512;
+	if([DB]==-1||[DB]=="")then
+		//print("lseek-NULL");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("DB");
+	load(1,[DB]);
+	[physicalSP-3]=[512+lseek%512];
+	[PPOFTphysical+1]=[PPOFTphysical+1]+1;
+//print("!READ");
+	[physicalSP-2]=[PPOFTphysical+1];
+	
+	ireturn;
+endif;

@@ -1,0 +1,221 @@
+//print("-------------------");
+//print("In INT 7");
+
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias SysCallNo S2;
+SysCallNo=[physicalSP-1];
+
+alias FILEphysical S3;
+alias SWOFTindex S4;
+alias newPCB S5;
+alias temp S6;
+alias temp2 S7;
+alias MF S8;
+alias physical S9;
+alias PPOFTindex S10;
+alias currentPID S11;
+alias i S12;
+alias nextPCB S13;
+alias currentPCB S14;
+alias SWOFTphysical S15;
+
+//Exit()
+if(SysCallNo==10)then
+//print("EXIT");
+//print("halt?");
+if(PTBR<1280)then
+	currentPID = (PTBR - 1024) / 8;
+	currentPCB = READY_LIST + 32 * currentPID;
+else
+	currentPID = ((PTBR - 13824) / 8)+32;
+	currentPCB = 12800 + 32 * (currentPID-32);
+endif;
+//print("waiters");	
+	temp=READY_LIST;
+	while(temp<13824)do
+		if([temp+1]==100+currentPID)then
+			[temp+1]=1;
+		endif;
+		temp=temp+32;
+		if(temp==2560)then
+			temp=12800;
+		endif;
+	endwhile;
+//print("halt?");
+	nextPCB = 1536;
+	while(nextPCB<13824&&[nextPCB+1]!=1)do/////////
+		//print([nextPCB]);
+		//print([nextPCB+1]);
+		nextPCB=nextPCB+32;
+		if(nextPCB==2560)then
+			nextPCB=12800;
+		endif;
+	endwhile;
+	if(nextPCB==13824)then
+		//print("PCB-0s");
+		//print("shut-down");
+		halt;
+	endif;
+////print("PCB");
+//	nextPCB = READY_LIST;
+//	while([nextPCB+1]!=2)do
+//		nextPCB=nextPCB+32;
+//	endwhile;
+//print("files");
+	FILEphysical=currentPCB+15;
+	while(FILEphysical<currentPCB+31)do
+		if([FILEphysical+0]!=-1)then
+			SWOFTphysical=1344;
+			SWOFTindex=[FILEphysical];
+			SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+			[SWOFTphysical+1]=[SWOFTphysical+1]-1;
+			if([SWOFTphysical+1]==0)then
+				[SWOFTphysical]=-1;
+			endif;
+			[FILEphysical]=-1;
+			[FILEphysical+1]=-1;
+		endif;
+		FILEphysical=FILEphysical+2;
+	endwhile;
+//print("state");
+	[currentPCB+1]=0;
+//-------------------------------------------------------------
+//print("MF");
+	i=0;
+	while(i<8)do
+		if([PTBR+i+1]=="01"||[PTBR+i+1]=="11")then
+			[MEM_LIST+[PTBR+i]]=[MEM_LIST+[PTBR+i]]-1;
+		endif;
+		if([PTBR+i+1]=="00"&&[PTBR+i]>=448)then
+			[DISK_LIST+[PTBR+i]]=[DISK_LIST+[PTBR+i]]-1;
+			store(6,20);
+		endif;
+		i=i+2;
+	endwhile;
+//----------------------------------------------------------------
+//print("PTBR");
+	[PTBR+0]=-1;
+	[PTBR+1]="00";
+	[PTBR+2]=-1;
+	[PTBR+3]="00";
+	[PTBR+4]=-1;
+	[PTBR+5]="00";
+	[PTBR+6]=-1;
+	[PTBR+7]="00";
+//print("next");
+	newPCB=currentPCB+32;
+	if(newPCB==2560)then
+		newPCB=12800;
+	endif;
+	if(newPCB==13824)then
+		newPCB=1536;
+	endif;
+	while ([newPCB + 1]!=1) do
+		newPCB=newPCB+32;
+		if(newPCB==2560)then
+			newPCB=12800;
+		endif;
+		if(newPCB==13824)then
+			newPCB=1536;
+		endif;
+	endwhile;
+//print("set PCB");
+	[ newPCB + 1 ] = 2;
+	BP=[ newPCB + 2 ];
+	SP=[ newPCB + 3 ];
+	PTBR=[ newPCB + 5 ];
+	PTLR=[ newPCB + 6 ];	
+	R0=[ newPCB + 7 ];
+	R1=[ newPCB + 8 ];
+	R2=[ newPCB + 9 ];
+	R3=[ newPCB + 10];
+	R4=[ newPCB + 11];
+	R5=[ newPCB + 12];
+	R6=[ newPCB + 13];
+	R7=[ newPCB + 14];
+	SP = SP + 1;
+//print("IP"); 
+if([PTBR+6]>=447)then
+	alias VPagenum S9;
+	alias Ip_addr S3;
+	alias Cause S10;
+	VPagenum=3;
+	Ip_addr=[ newPCB + 4 ];
+	Cause=0;
+	inline "JMP 3584";
+endif;
+	temp = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+	[ temp ] = [ newPCB + 4 ];
+//print("!EXIT");
+	ireturn;
+endif;
+
+//Wait();
+if(SysCallNo==13)then
+//print("wait");
+alias WaitingPID S6;
+	WaitingPID=[physicalSP-3];
+	if(PTBR<1280)then
+		currentPID = (PTBR - 1024) / 8;
+		currentPCB = READY_LIST + 32 * currentPID;
+	else
+		currentPID = ((PTBR - 13824) / 8)+32;
+		currentPCB = 12800 + 32 * (currentPID-32);
+	endif;
+	if(WaitingPID<32)then
+		if([1536+WaitingPID*32+1]==0)then
+	//		//print("state=0");
+			[physicalSP-2]=-1;
+			ireturn;
+		endif;
+		if([READY_LIST+WaitingPID*32]==currentPID)then
+	//		//print("PID=self");
+			[physicalSP-2]=-1;
+			ireturn;
+		endif;
+	endif;
+	if(WaitingPID>31)then
+		if([12800+(WaitingPID-32)*32+1]==0)then
+	//		//print("state=0");
+			[physicalSP-2]=-1;
+			ireturn;
+		endif;
+		if([12800+(WaitingPID-32)*32]==currentPID)then
+	//		//print("PID=self");
+			[physicalSP-2]=-1;
+			ireturn;
+		endif;
+	endif;
+	[currentPCB+1]=100+WaitingPID;
+//print("!wait");
+//print("jmp next");
+	inline "JMP 4608";
+endif;
+
+//Signal();
+if(SysCallNo==14)then
+//print("signal");	
+	if(PTBR<1280)then
+		currentPID = (PTBR - 1024) / 8;
+		currentPCB = READY_LIST + 32 * currentPID;
+	else
+		currentPID = ((PTBR - 13824) / 8)+32;
+		currentPCB = 12800 + 32 * (currentPID-32);
+	endif;
+	temp=READY_LIST;
+	while(temp<13824)do
+		if([temp+1]==100+currentPID)then
+			[temp+1]=1;
+		endif;
+		temp=temp+32;
+		if(temp==2560)then
+			temp=12800;
+		endif;
+	endwhile;
+//print("!signal");
+ireturn;
+endif;
+print("exit-end");
+breakpoint;

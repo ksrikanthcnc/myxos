@@ -1,0 +1,6 @@
+integer main(){
+	integer status;
+	status=Create("hibernate");
+	breakpoint;
+return 0;
+}

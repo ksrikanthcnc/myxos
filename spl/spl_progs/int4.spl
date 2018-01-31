@@ -1,0 +1,94 @@
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+//Conditions
+
+//........................Implementation of Write......................
+
+if (sysCallNo == 5) then
+  alias fileDescriptor S2;
+  alias wordToWrite S3;
+  wordToWrite = [physicalSP - 3]; //Getting arguments from stack
+  fileDescriptor = [physicalSP - 4];
+
+  //Checking if fileDescriptor is valid
+
+  alias i S4;
+  i = 0;
+  while (i < 8) do
+    if (i == fileDescriptor) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == 8) then
+    print ("Invalid File");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Check if file is already open and the information is in per-process table
+
+  alias processFileTable S4;
+  alias PID S5;
+  PID = (PTBR - 1024)/8;
+  processFileTable = READY_LIST + 32 * PID + (2 * fileDescriptor) + 15; //From PCB
+  if ([processFileTable] == -1) then
+    print ("Failure");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Find the basic block from the FAT table and load to scratchpad
+  
+  alias FATindex S5;
+  FATindex = [[processFileTable]]; //there are 2 brackets. Intentional.
+                                   //See figure at beginning of Stage 8
+  alias basicBlock S6;
+  basicBlock = [FATindex + 2];
+  load (1, basicBlock);
+  alias lSeekBlock S7;
+  alias dataBlock S8;
+  lSeekBlock = [processFileTable + 1]/512;
+  dataBlock = [SCRATCHPAD + lSeekBlock];
+
+  //If data block does not exist, making a new one and adding in Basic Block
+
+  if (dataBlock == -1) then
+    alias i S9;
+    i = 24;
+    while (i < 448) do
+      if ([DISK_LIST + i] == 0) then
+        [DISK_LIST + i] = 1;
+        break;
+      endif;
+      i = i + 1;
+    endwhile;
+    if (i == 448) then
+      print("Disk block not empty");
+      [physicalSP - 2] = -1;
+      ireturn;
+    endif;
+    [SCRATCHPAD + lSeekBlock] = i;
+    dataBlock = i;
+    store(1, basicBlock);
+    [FATindex + 1] = [FATindex + 1] + 512;
+    store(5, 19);
+    store(6, 20);
+  endif;
+
+  //Writing to the file
+
+  load (1, dataBlock);
+  alias offset S9;
+  offset = [processFileTable + 1] % 512;
+  [SCRATCHPAD + offset] = wordToWrite;
+  store (1, dataBlock);
+  [processFileTable + 1] = [processFileTable + 1] + 1;
+  [physicalSP - 2] = 0;
+endif;
+
+ireturn;

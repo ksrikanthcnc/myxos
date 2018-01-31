@@ -1,0 +1,7 @@
+exhandler	breakpoint
+int1		hibernate	files
+int2		files		open				close any
+int3		open							return-lssek
+int4		append
+int7		dead-lock	(signal)
+timer		dead-lock(support)	verbose

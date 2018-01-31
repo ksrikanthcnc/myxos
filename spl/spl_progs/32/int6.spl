@@ -1,0 +1,135 @@
+//print("-------------------");
+//print("In INT 6");
+
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias filename S1;
+filename=[physicalSP-3];
+
+alias sysCallNo S2;
+sysCallNo=[physicalSP-1];
+
+alias FATphysical S3;
+alias DF S4;
+alias required S5;
+alias i S6;
+alias j S7;
+alias MF S8;
+alias temp S9;
+alias PPOFTindex S10;
+alias currentPID S11;
+alias currentPCB S12;
+alias currentphysical S13;
+alias PPOFTphysical S14;
+alias SWOFTphysical S15;
+
+
+//Exec()
+if(sysCallNo==9)then
+alias SWOFTindex S2;
+//print("EXEC");
+//print("exist?");
+	FATphysical=FAT;
+	while(FATphysical<FAT+512&&[FATphysical+0]!=filename)do
+		FATphysical=FATphysical+8;
+	endwhile;
+	
+	if(FATphysical>=FAT+512)then
+		//print("!exist");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("BBnew");	
+	load(1,[FATphysical+2]);
+//print("new");
+	required=0;
+	temp=512;
+	while(temp<1024)do
+		if([temp]>20&&[temp]<448)then
+			required=required+1;
+		endif;
+		temp=temp+1;
+	endwhile;
+	if(required>3)then
+		//print("big prog");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//--------------------------------------------------------------
+//print("MF");
+	i=0;
+	while(i<6)do
+		if([PTBR+i+1]=="01"||[PTBR+i+1]=="11")then
+			[MEM_LIST+[PTBR+i]]=[MEM_LIST+[PTBR+i]]-1;
+		endif;
+		if([PTBR+i+1]=="00"&&[PTBR+i]>=448)then
+			[DISK_LIST+[PTBR+i]]=[DISK_LIST+[PTBR+i]]-1;
+			store(6,20);
+		endif;
+		i=i+2;
+	endwhile;
+//print("PT");
+	i=0;
+	j=0;
+	while(i<6)do
+		if([512+j]<=447&&[512+j]>=21)then
+			[PTBR+i]=[512+j];
+			[PTBR+i+1]="00";
+			j=j+1;
+		else
+			[PTBR+i]=-1;
+			[PTBR+i+1]="00";
+		endif;
+		i=i+2;
+	endwhile;			
+//print("stack");
+	[PTBR+7]="01";	
+//-------------------------------------------------------
+//print("close");
+	PPOFTindex=0;
+	currentPID = (PTBR - 1024) / 8;	
+	currentPCB = READY_LIST + 32 * currentPID;
+	while(PPOFTindex<8)do
+		PPOFTphysical=currentPCB+15;
+		PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+		if([PPOFTphysical]!=-1)then
+			SWOFTphysical=FILE_TABLE;
+			SWOFTindex=[PPOFTphysical];
+			SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+			[SWOFTphysical+1]=[SWOFTphysical+1]-1;
+			if([SWOFTphysical+1]==0)then
+				//print("file=0");
+				[SWOFTphysical]=-1;
+			endif;
+		[PPOFTphysical]=-1;
+		[PPOFTphysical+1]=-1;
+		endif;
+		PPOFTindex=PPOFTindex+1;
+	endwhile;
+//print("SP");
+	BP=3*512;
+	SP=3*512;
+
+	physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+	[physicalSP] = 0;
+//print("!EXEC");
+ireturn;
+endif;
+
+if(sysCallNo==11)then
+//print("PID");
+	currentPID=(PTBR-1024)/8;
+	[physicalSP-2]=currentPID;
+//print(currentPID);
+ireturn;
+endif;
+
+if(sysCallNo==12)then
+//print("PPID");
+	currentPID=(PTBR-1024)/8;
+	currentPCB = READY_LIST + 32 * currentPID;
+	[physicalSP-2]=[currentPCB+31];
+//print([physicalSP-2]);
+ireturn;
+endif;

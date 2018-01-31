@@ -1,0 +1,8 @@
+START
+MOV BP,1535
+MOV 1536, "hibernate"
+MOV 1537, 1
+INT 1
+MOV S0, "resuming"
+OUT S0
+INT 7

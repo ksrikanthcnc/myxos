@@ -1,0 +1,5 @@
+Create	Delete	1	Hibernate	Files								:close&delete	delete&create
+Open	Close	2	Open		FilesOpen	FAT						:close&open		
+Seek	Read	3	Open											:seek-anywhere
+Write			4	Append											:write-anywhere
+

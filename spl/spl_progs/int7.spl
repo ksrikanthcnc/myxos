@@ -1,0 +1,209 @@
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)]*512) + (SP % 512);
+
+//Getting the system call from the stack
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+//.........................Implementation of Wait............................
+
+if (sysCallNo == 13) then
+	alias waitingPID S2;
+	waitingPID = [physicalSP - 3];
+
+	if (waitingPID == -1) then
+		print("wait is -1");
+	endif;
+	//print("Enter wait");
+	alias currentPID S8;
+	currentPID = (PTBR - 1024)/8;
+	//Checking if process is running or terminated
+
+	alias process S13;
+	process = READY_LIST + (2 * waitingPID);
+
+	if ([process + 1] == 2 || [process + 1] == 0) then
+		print("Error in wait");
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+
+	alias currentPCB S10;
+	currentPCB = READY_LIST + 32 * currentPID;
+	[currentPCB + 1] = 100 + waitingPID; //state is ready
+	[currentPCB + 2] = BP;
+	[currentPCB + 3] = SP - 1;
+	alias physicalSP S2;
+	physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+	[currentPCB + 4] = [physicalSP]; //save IP of current process from the stack
+	[currentPCB + 5] = PTBR;
+	[currentPCB + 6] = PTLR;
+	[currentPCB + 7] = R0;
+	[currentPCB + 8] = R1;
+	[currentPCB + 9] = R2;
+	[currentPCB + 10] = R3;
+	[currentPCB + 11] = R4;
+	[currentPCB + 12] = R5;
+	[currentPCB + 13] = R6;
+	[currentPCB + 14] = R7;
+
+	//Scheduling another process now
+
+	alias PID S3;
+	PID = (currentPID + 1)%32;
+	while (([READY_LIST + (32 * PID) + 1]) != 1) do
+		PID = (PID + 1)%32;
+	endwhile;
+
+	//Setting up the values of the new register
+
+	alias newPCB S4;
+	newPCB = READY_LIST + 32 * PID;
+	BP = [newPCB + 2];
+	SP = [newPCB + 3];
+	PTBR = [newPCB + 5];
+	PTLR = [newPCB + 6];
+	R0 = [newPCB + 7];
+	R1 = [newPCB + 8];
+	R2 = [newPCB + 9];
+	R3 = [newPCB + 10];
+	R4 = [newPCB + 11];
+	R5 = [newPCB + 12];
+	R6 = [newPCB + 13];
+	R7 = [newPCB + 14];
+	SP = SP + 1;
+
+	alias ReturnAdd S7;
+	ReturnAdd = ([PTBR + 2 * (SP / 512)]*512) + (SP % 512);
+	[ReturnAdd] = [newPCB + 4];
+	[newPCB + 1] = 2;
+	[physicalSP - 2] = 0;
+	ireturn;
+endif;
+
+//.........................Implementation of Signal...........................
+
+if (sysCallNo == 14) then
+	alias i S2;
+	alias currentPID S3;
+	currentPID = (PTBR - 1024)/8;
+	//Making all waiting processes as ready
+	i = 0;
+	while (i < 32) do
+		if ([READY_LIST + (32 * i) + 1] == 100 + currentPID) then
+			[READY_LIST + (32 * i) + 1] = 1;
+		endif;
+		i = i + 1;
+	endwhile;
+	[physicalSP - 2] = 0;
+	ireturn;
+endif;
+
+//.........................Implementation of Exit........................
+
+//if (sysCallNo == 10) then
+	print ("Exiting");
+	alias i S2;
+	 breakpoint;
+	alias processID S9;
+	processID = (PTBR - 1024)/8;
+	//Making all waiting processes as ready
+	i = 0;
+	while (i < 32) do
+		alias page S12;
+		page = READY_LIST + (32 * i);
+		if ([page + 1] == (100 + processID)) then
+			[page + 1] = 1;
+		endif;
+		i = i + 1;
+	endwhile;
+
+	//Checking if any process is in ready state
+	i = 0;
+	while (i < 32) do
+		if ([READY_LIST + (32 * i) + 1] == 1) then
+			break;
+		endif;
+		i = i + 1;
+	endwhile;
+	if (i == 32) then
+		//print("No other");
+		halt;
+		ireturn;
+	endif;
+
+	//Checking the running process
+
+	alias PID S5;
+//	print (i);
+	PID = (PTBR - 1024)/8;
+
+	i = 15;
+	alias perProcessTable S3;
+	while (i < 31) do
+		perProcessTable = [READY_LIST + (32 * PID) + i];
+		if (perProcessTable != -1) then
+			[perProcessTable + 1] = [perProcessTable + 1] - 1;
+		endif;
+		i = i + 1;
+	endwhile;
+//	print("All file instances closed");
+
+	//Setting the STATE as 0
+
+	[READY_LIST + (32 * PID) + 1] = 0;
+
+	//Freeing up space in the MEM_LIST
+
+	alias pageEntry S3;
+	i = 0;
+	while (i < 4) do
+		pageEntry = PAGE_TABLE + (8*PID) + (2*i);
+    if ([pageEntry + 1] == "01" || [pageEntry + 1] == "11") then
+      [MEM_LIST + [pageEntry]] = [MEM_LIST + [pageEntry]] - 1;
+    endif;
+    if ([pageEntry] >= 448) then
+      [DISK_LIST + [pageEntry]] = [DISK_LIST + [pageEntry]] - 1;
+      store(6, 20);
+    endif;
+		[pageEntry] = -1;
+		[pageEntry + 1] = "00";
+		i = i + 1;
+	endwhile;
+
+	//print("Page table done");
+
+	while (([READY_LIST + (32 * PID) + 1]) != 1) do
+		PID = (PID + 1)%32;
+	endwhile;
+
+	//Setting up the values of the new register
+
+	alias newPCB S3;
+	newPCB = READY_LIST + 32 * PID;
+	BP = [newPCB + 2];
+	SP = [newPCB + 3];
+	PTBR = [newPCB + 5];
+	PTLR = [newPCB + 6];
+	R0 = [newPCB + 7];
+	R1 = [newPCB + 8];
+	R2 = [newPCB + 9];
+	R3 = [newPCB + 10];
+	R4 = [newPCB + 11];
+	R5 = [newPCB + 12];
+	R6 = [newPCB + 13];
+	R7 = [newPCB + 14];
+	SP = SP + 1;
+
+	alias ReturnAdd S7;
+	ReturnAdd = ([PTBR + 2 * (SP / 512)]*512) + (SP % 512);
+	[ReturnAdd] = [newPCB + 4];
+	[newPCB + 1] = 2;
+	[physicalSP - 2] = 0;
+	ireturn;
+
+//endif;
+
+
+ireturn;

@@ -1,0 +1,191 @@
+print("-------------------");
+print("EXHANDLER");
+print([PTBR]);
+
+alias physicalSP S0;
+alias Cause S10;
+alias SysCallNo S2;
+alias VPagenum S9;
+alias Ip_addr S3;
+alias MF S4;
+alias PT S5;
+alias DF S6;
+alias freepage S7;
+alias page S8;
+
+
+
+Cause = EFR % 10;
+VPagenum = (EFR / 10) % 100;
+Ip_addr = (EFR/1000);
+
+physicalSP = ([PTBR + 2 * (Ip_addr / 512)] * 512) + (Ip_addr % 512);
+
+
+print("page_fault?");
+if(Cause==1)then
+	S2=10;
+	print("~~~~~~~~~~");
+	print("EFR");
+	print(EFR);
+	print("phy-IP");
+	print(physicalSP);
+	print("page");
+	print(physicalSP/512);
+	print("log-IP");
+	print(physicalSP%512);
+	print("illegal...");
+	print("instruction");
+	breakpoint;
+	print("exit");
+	inline "JMP 11808";
+endif;
+
+if(Cause==2)then
+	S2=10;
+	print("~~~~~~~~~~");
+	print("EFR");
+	print(EFR);
+	print("phy-IP");
+	print(physicalSP);
+	print("page");
+	print(physicalSP/512);
+	print("log-IP");
+	print(physicalSP%512);
+	print("illegal...");
+	print("memory...");
+	print("access...");
+	breakpoint;
+	print("exit");
+	inline "JMP 11808";
+endif;
+
+if(Cause==3)then
+	S2=10;
+	print("~~~~~~~~~~");
+	print("EFR");
+	print(EFR);
+	print("phy-IP");
+	print(physicalSP);
+	print("page");
+	print(physicalSP/512);
+	print("log-IP");
+	print(physicalSP%512);
+	print("divisor=0");
+	breakpoint;
+	print("exit");
+	inline "JMP 11808";
+endif;
+
+if(Cause==4)then
+	S2=10;
+	print("~~~~~~~~~~");
+	print("EFR");
+	print(EFR);
+	print("phy-IP");
+	print(physicalSP);
+	print("page");
+	print(physicalSP/512);
+	print("log-IP");
+	print(physicalSP%512);
+	print("illegal...");
+	print("operand...");
+	breakpoint;
+	print("exit");
+	inline "JMP 11808";
+endif;
+
+if(Cause==0)then
+print("VPage(-1)?");
+	if([PTBR+VPagenum*2]==-1)then
+		print("VPage=-1");
+		inline "JMP 11808";
+	endif;
+print("MF");
+	MF=MEM_LIST+24;
+	while([MF]!=0&&MF<MEM_LIST+64)do
+		MF=MF+1;
+	endwhile;
+	if(MF<1344)then
+print("freeMF");
+		[MF]=1;
+	else
+print("page-replace");
+		PT=PTBR;
+		while(1)do
+			if(PT>1278)then
+				PT=1024;
+			endif;
+			if([PT+1]=="00")then
+				PT=PT+2;
+				continue;
+			endif;
+			if(PT%8==6)then
+				print("stack");
+				PT=PT+2;
+				continue;
+			endif;
+			if([MEM_LIST+[PT]]>1)then
+				print("MF>1");
+				PT=PT+2;
+				continue;
+			endif;
+			if([PT+1]=="11")then
+				print("11=>01");
+				[PT+1]="01";
+				PT=PT+2;
+				continue;
+			endif;
+			break;
+		endwhile;
+
+		if([PT+1]=="01")then
+			print("swap");
+			DF=DISK_LIST+448;
+			while(DF<DISK_LIST+512&&[DF]!=0)do
+				DF=DF+1;
+			endwhile;
+			if(DF==DISK_LIST+512)then
+				print("swap-full");
+				inline "JMP 11808";
+			endif;
+			print("swapping");
+			store([PT],DF%512);
+			print("DF");
+			[DF]=1;
+			print("free-MF");
+//			[MEM_LIST+[PT]]=1;
+			MF=MEM_LIST+[PT];
+			print("PTBR");
+			[PT]=DF%512;
+			[PT+1]="00";
+		else
+			print("boo");
+			breakpoint;
+			
+		endif;
+	endif;
+	
+	freepage=MF%64;
+	page=[PTBR+VPagenum*2];
+	if(page<=447&&page>=21)then
+		print("on-disk");
+		load(freepage,page);
+	else
+		print("in-swap");
+		load(freepage,page);
+		[DISK_LIST+page]=[DISK_LIST+page]-1;
+	endif;
+	store(6,20);
+	[PTBR+VPagenum*2]=freepage;
+	[PTBR+VPagenum*2+1]="11";
+	
+	print("SP");
+	SP=SP+1;
+	physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+	[physicalSP]=Ip_addr;
+print("!EXHANDLER");
+print([PTBR]);
+
+	ireturn;
+endif;
