@@ -1,147 +1,157 @@
+set +e
 echo "################################################################################################################################"
-/home/srikanth/myxos/spl/spl --int=1 /home/srikanth/myxos/spl/spl_progs/int1.spl
-/home/srikanth/myxos/spl/spl --int=2 /home/srikanth/myxos/spl/spl_progs/int2.spl
-/home/srikanth/myxos/spl/spl --int=3 /home/srikanth/myxos/spl/spl_progs/int3.spl
-/home/srikanth/myxos/spl/spl --int=4 /home/srikanth/myxos/spl/spl_progs/int4.spl
-/home/srikanth/myxos/spl/spl --int=5 /home/srikanth/myxos/spl/spl_progs/int5.spl
-/home/srikanth/myxos/spl/spl --int=6 /home/srikanth/myxos/spl/spl_progs/int6.spl
-/home/srikanth/myxos/spl/spl --int=7 /home/srikanth/myxos/spl/spl_progs/int7.spl
-/home/srikanth/myxos/spl/spl --int=timer /home/srikanth/myxos/spl/spl_progs/timer.spl
-/home/srikanth/myxos/spl/spl --exhandler /home/srikanth/myxos/spl/spl_progs/exhandler.spl
-/home/srikanth/myxos/spl/spl --os /home/srikanth/myxos/spl/spl_progs/os_startup.spl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/init.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/init-w.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/test.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/test1.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/init0.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/init1.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/init2.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/ls.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/exec.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/cat.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/one.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/two.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/three.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/four.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/odd.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/even.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/prime.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/printnum.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/files.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/child.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/master.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/master64.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/ex10.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/fork.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/shell.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/brkp.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/create1.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/create2.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/create3.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/test.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/hiber.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/tanu.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/big.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/copy.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/cat-full.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/dead.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/dead1.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/dead2.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/dead3.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/dead4.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/ten.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/signal.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/func.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/timey.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/testm.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/test1m.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/seek.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/end.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/end1.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/end2.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/t.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/t1.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/t2.apl
-/home/srikanth/myxos/apl/apl /home/srikanth/myxos/apl/apl_progs/tt.apl
+find . -iname "*~" -print -exec rm {} \;	#removing backup files
 
-cp /home/srikanth/myxos/apl/apl_progs/child.xsm /home/srikanth/myxos/apl/apl_progs/sample.xsm
-cd /home/srikanth/myxos/xfs-interface/
-/home/srikanth/myxos/xfs-interface/xfs-interface fdisk
-/home/srikanth/myxos/xfs-interface/xfs-interface load --os /home/srikanth/myxos/spl/spl_progs/os_startup.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=1 /home/srikanth/myxos/spl/spl_progs/int1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=2 /home/srikanth/myxos/spl/spl_progs/int2.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=3 /home/srikanth/myxos/spl/spl_progs/int3.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=4 /home/srikanth/myxos/spl/spl_progs/int4.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=5 /home/srikanth/myxos/spl/spl_progs/int5.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=6 /home/srikanth/myxos/spl/spl_progs/int6.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=7 /home/srikanth/myxos/spl/spl_progs/int7.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exhandler /home/srikanth/myxos/spl/spl_progs/exhandler.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --int=timer /home/srikanth/myxos/spl/spl_progs/timer.xsm
+echo "compiling"
+echo "spls"
+spl/spl --int=1 spl/spl_progs/int1.spl
+spl/spl --int=2 spl/spl_progs/int2.spl
+spl/spl --int=3 spl/spl_progs/int3.spl
+spl/spl --int=4 spl/spl_progs/int4.spl
+spl/spl --int=5 spl/spl_progs/int5.spl
+spl/spl --int=6 spl/spl_progs/int6.spl
+spl/spl --int=7 spl/spl_progs/int7.spl
+spl/spl --int=timer spl/spl_progs/timer.spl
+spl/spl --exhandler spl/spl_progs/exhandler.spl
+spl/spl --os spl/spl_progs/os_startup.spl
 
-/home/srikanth/myxos/xfs-interface/xfs-interface load --init /home/srikanth/myxos/apl/apl_progs/init.xsm
+echo "apls"
+apl/apl apl/apl_progs/init.apl
+apl/apl apl/apl_progs/init-w.apl
+apl/apl apl/apl_progs/test.apl
+apl/apl apl/apl_progs/test1.apl
+apl/apl apl/apl_progs/init0.apl
+apl/apl apl/apl_progs/init1.apl
+apl/apl apl/apl_progs/init2.apl
+apl/apl apl/apl_progs/ls.apl
+apl/apl apl/apl_progs/exec.apl
+apl/apl apl/apl_progs/cat.apl
+apl/apl apl/apl_progs/one.apl
+apl/apl apl/apl_progs/two.apl
+apl/apl apl/apl_progs/three.apl
+apl/apl apl/apl_progs/four.apl
+apl/apl apl/apl_progs/odd.apl
+apl/apl apl/apl_progs/even.apl
+apl/apl apl/apl_progs/prime.apl
+apl/apl apl/apl_progs/printnum.apl
+apl/apl apl/apl_progs/files.apl
+apl/apl apl/apl_progs/child.apl
+apl/apl apl/apl_progs/master.apl
+apl/apl apl/apl_progs/master64.apl
+apl/apl apl/apl_progs/ex10.apl
+apl/apl apl/apl_progs/fork.apl
+apl/apl apl/apl_progs/shell.apl
+apl/apl apl/apl_progs/brkp.apl
+apl/apl apl/apl_progs/create1.apl
+apl/apl apl/apl_progs/create2.apl
+apl/apl apl/apl_progs/create3.apl
+apl/apl apl/apl_progs/test.apl
+apl/apl apl/apl_progs/hiber.apl
+apl/apl apl/apl_progs/tanu.apl
+apl/apl apl/apl_progs/big.apl
+apl/apl apl/apl_progs/copy.apl
+apl/apl apl/apl_progs/cat-full.apl
+apl/apl apl/apl_progs/dead.apl
+apl/apl apl/apl_progs/dead1.apl
+apl/apl apl/apl_progs/dead2.apl
+apl/apl apl/apl_progs/dead3.apl
+apl/apl apl/apl_progs/dead4.apl
+apl/apl apl/apl_progs/ten.apl
+apl/apl apl/apl_progs/signal.apl
+apl/apl apl/apl_progs/func.apl
+apl/apl apl/apl_progs/timey.apl
+apl/apl apl/apl_progs/testm.apl
+apl/apl apl/apl_progs/test1m.apl
+apl/apl apl/apl_progs/seek.apl
+apl/apl apl/apl_progs/end.apl
+apl/apl apl/apl_progs/end1.apl
+apl/apl apl/apl_progs/end2.apl
+apl/apl apl/apl_progs/t.apl
+apl/apl apl/apl_progs/t1.apl
+apl/apl apl/apl_progs/t2.apl
+apl/apl apl/apl_progs/tt.apl
 
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/big.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/init-w.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/brkp.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/cat-full.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/cat.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/child.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/copy.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/create1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/create2.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/create3.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/dead.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/dead1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/dead2.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/dead3.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/dead4.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/even.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ex10.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/exam.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/exec.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/files.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/fork.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/four.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/func.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/hiber.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ill_0.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ill_inst.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ill_mem.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ill_op.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/init0.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/init1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/init2.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ls.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/master.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/master64.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/odd.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/one.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/prime.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/printnum.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/sample.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/shell.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/signal.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/tanu.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/ten.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/test1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/test.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/three.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/two.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/timey.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/testm.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/test1m.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/seek.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/end.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/end1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/end2.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/t.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/t1.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/t2.xsm
-/home/srikanth/myxos/xfs-interface/xfs-interface load --exec /home/srikanth/myxos/apl/apl_progs/tt.xsm
+cp apl/apl_progs/child.xsm apl/apl_progs/sample.xsm
+cd xfs-interface
+echo "loading to disk"
+./xfs-interface fdisk
+./xfs-interface load --os ../spl/spl_progs/os_startup.xsm
+./xfs-interface load --int=1 ../spl/spl_progs/int1.xsm
+./xfs-interface load --int=2 ../spl/spl_progs/int2.xsm
+./xfs-interface load --int=3 ../spl/spl_progs/int3.xsm
+./xfs-interface load --int=4 ../spl/spl_progs/int4.xsm
+./xfs-interface load --int=5 ../spl/spl_progs/int5.xsm
+./xfs-interface load --int=6 ../spl/spl_progs/int6.xsm
+./xfs-interface load --int=7 ../spl/spl_progs/int7.xsm
+./xfs-interface load --exhandler ../spl/spl_progs/exhandler.xsm
+./xfs-interface load --int=timer ../spl/spl_progs/timer.xsm
 
-/home/srikanth/myxos/xfs-interface/xfs-interface load --data /home/srikanth/myxos/apl/apl_progs/dat.dat
-/home/srikanth/myxos/xfs-interface/xfs-interface load --data /home/srikanth/myxos/apl/apl_progs/exam.dat
+./xfs-interface load --init ../apl/apl_progs/init.xsm
 
-cd /home/srikanth/myxos/xsm
-./xsm -d -t=10
+./xfs-interface load --exec ../apl/apl_progs/big.xsm
+./xfs-interface load --exec ../apl/apl_progs/init-w.xsm
+./xfs-interface load --exec ../apl/apl_progs/brkp.xsm
+./xfs-interface load --exec ../apl/apl_progs/cat-full.xsm
+./xfs-interface load --exec ../apl/apl_progs/cat.xsm
+./xfs-interface load --exec ../apl/apl_progs/child.xsm
+./xfs-interface load --exec ../apl/apl_progs/copy.xsm
+./xfs-interface load --exec ../apl/apl_progs/create1.xsm
+./xfs-interface load --exec ../apl/apl_progs/create2.xsm
+./xfs-interface load --exec ../apl/apl_progs/create3.xsm
+./xfs-interface load --exec ../apl/apl_progs/dead.xsm
+./xfs-interface load --exec ../apl/apl_progs/dead1.xsm
+./xfs-interface load --exec ../apl/apl_progs/dead2.xsm
+./xfs-interface load --exec ../apl/apl_progs/dead3.xsm
+./xfs-interface load --exec ../apl/apl_progs/dead4.xsm
+./xfs-interface load --exec ../apl/apl_progs/even.xsm
+./xfs-interface load --exec ../apl/apl_progs/ex10.xsm
+./xfs-interface load --exec ../apl/apl_progs/exam.xsm
+./xfs-interface load --exec ../apl/apl_progs/exec.xsm
+./xfs-interface load --exec ../apl/apl_progs/files.xsm
+./xfs-interface load --exec ../apl/apl_progs/fork.xsm
+./xfs-interface load --exec ../apl/apl_progs/four.xsm
+./xfs-interface load --exec ../apl/apl_progs/func.xsm
+./xfs-interface load --exec ../apl/apl_progs/hiber.xsm
+./xfs-interface load --exec ../apl/apl_progs/ill_0.xsm
+./xfs-interface load --exec ../apl/apl_progs/ill_inst.xsm
+./xfs-interface load --exec ../apl/apl_progs/ill_mem.xsm
+./xfs-interface load --exec ../apl/apl_progs/ill_op.xsm
+./xfs-interface load --exec ../apl/apl_progs/init0.xsm
+./xfs-interface load --exec ../apl/apl_progs/init1.xsm
+./xfs-interface load --exec ../apl/apl_progs/init2.xsm
+./xfs-interface load --exec ../apl/apl_progs/ls.xsm
+./xfs-interface load --exec ../apl/apl_progs/master.xsm
+./xfs-interface load --exec ../apl/apl_progs/master64.xsm
+./xfs-interface load --exec ../apl/apl_progs/odd.xsm
+./xfs-interface load --exec ../apl/apl_progs/one.xsm
+./xfs-interface load --exec ../apl/apl_progs/prime.xsm
+./xfs-interface load --exec ../apl/apl_progs/printnum.xsm
+./xfs-interface load --exec ../apl/apl_progs/sample.xsm
+./xfs-interface load --exec ../apl/apl_progs/shell.xsm
+./xfs-interface load --exec ../apl/apl_progs/signal.xsm
+./xfs-interface load --exec ../apl/apl_progs/tanu.xsm
+./xfs-interface load --exec ../apl/apl_progs/ten.xsm
+./xfs-interface load --exec ../apl/apl_progs/test1.xsm
+./xfs-interface load --exec ../apl/apl_progs/test.xsm
+./xfs-interface load --exec ../apl/apl_progs/three.xsm
+./xfs-interface load --exec ../apl/apl_progs/two.xsm
+./xfs-interface load --exec ../apl/apl_progs/timey.xsm
+./xfs-interface load --exec ../apl/apl_progs/testm.xsm
+./xfs-interface load --exec ../apl/apl_progs/test1m.xsm
+./xfs-interface load --exec ../apl/apl_progs/seek.xsm
+./xfs-interface load --exec ../apl/apl_progs/end.xsm
+./xfs-interface load --exec ../apl/apl_progs/end1.xsm
+./xfs-interface load --exec ../apl/apl_progs/end2.xsm
+./xfs-interface load --exec ../apl/apl_progs/t.xsm
+./xfs-interface load --exec ../apl/apl_progs/t1.xsm
+./xfs-interface load --exec ../apl/apl_progs/t2.xsm
+./xfs-interface load --exec ../apl/apl_progs/tt.xsm
+
+./xfs-interface load --data ../apl/apl_progs/dat.dat
+./xfs-interface load --data ../apl/apl_progs/exam.dat
+
+
+cd ..
+echo "starting XOS"
+xsm/xsm  -t=10 
 

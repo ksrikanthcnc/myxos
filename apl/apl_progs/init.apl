@@ -2,6 +2,7 @@ integer main()
 {
 	integer status,temp;
 	string file;
+	print("boo");
 	while(1==1)do
 		print("*********************");
 		read(file);
