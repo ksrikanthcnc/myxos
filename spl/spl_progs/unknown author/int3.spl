@@ -1,0 +1,137 @@
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+//Conditions
+
+//.........................Implementation of Seek......................
+
+if (sysCallNo == 6) then
+  alias fileDescriptor S2;
+  alias newLseek S3;
+  newLseek = [physicalSP - 3]; //Getting arguments from stack
+  fileDescriptor = [physicalSP - 4];
+
+  //Checking if fileDescriptor is valid
+
+  alias i S4;
+  i = 0;
+  while (i < 8) do
+    if (i == fileDescriptor) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == 8) then
+    print ("Invalid File");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Check if file is already open and the information is in per-process table
+
+  alias processFileTable S4;
+  alias PID S5;
+  PID = (PTBR - 1024)/8;
+  processFileTable = READY_LIST + 32 * PID + (2 * fileDescriptor) + 15; //From PCB
+  if ([processFileTable] == -1) then
+    print ("Failure");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Checking the validity of newLseek
+
+  alias FATindex S5;
+  FATindex = [[processFileTable]];
+  alias i S6;
+  i = 0;
+  while (i < [FATindex + 1]) do
+    if (newLseek == i) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == FATindex + 1) then
+    print("Invalid seek location");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Making the change
+
+  [processFileTable + 1] = newLseek;
+  [physicalSP - 2] = 0;
+endif;
+
+//.........................Implementation of Read......................
+
+if (sysCallNo == 7) then
+  alias fileDescriptor S2;
+  alias wordToRead S3;
+  wordToRead = physicalSP - 3; //Getting arguments from stack
+  fileDescriptor = [physicalSP - 4];
+
+  //Checking if fileDescriptor is valid
+
+  alias i S4;
+  i = 0;
+  while (i < 8) do
+    if (i == fileDescriptor) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == 8) then
+    print ("Invalid FileDescriptor");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Check if file is already open and the information is in per-process table
+
+  //Check if file is already open and the information is in per-process table
+
+  alias processFileTable S4;
+  alias PID S5;
+  PID = (PTBR - 1024)/8;
+  processFileTable = READY_LIST + 32 * PID + (2 * fileDescriptor) + 15; //From PCB
+  if ([processFileTable] == -1) then
+    print ("Failure");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+
+  //Find the basic block from the FAT table and load to scratchpad
+
+  alias FATindex S5;
+  FATindex = [[processFileTable]]; //there are 2 brackets. Intentional.
+                                   //See figure at beginning of Stage 8
+  alias basicBlock S6;
+  basicBlock = [FATindex + 2];
+  load (1, basicBlock);
+  if ([processFileTable + 1] == [FATindex + 1]) then
+    print("EOF");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+  alias lSeekBlock S7;
+  alias dataBlock S8;
+  lSeekBlock = [processFileTable + 1]/512;
+  dataBlock = [SCRATCHPAD + lSeekBlock];
+
+  //Reading from the file
+
+  load (1, dataBlock);
+  alias offset S9;
+  offset = [processFileTable + 1] % 512;
+//  [wordToRead] = [SCRATCHPAD + offset];
+  [physicalSP - 3] = [SCRATCHPAD + offset];
+  [processFileTable + 1] = [processFileTable + 1] + 1;
+  [physicalSP - 2] = 0;
+endif;
+
+ireturn;

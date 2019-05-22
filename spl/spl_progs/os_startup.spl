@@ -1,151 +1,107 @@
-//...................OS Startup Code.........................//
+//print("OS started");
+//print("EXCEPTION");
+load (7,1);
+load (8,2);
+//print("TIMER");
+load(9,3);
+load(10,4);
+//print("INTs");
+load(11,5);
+load(12,6);
+load(13,7);
+load(14,8);
+load(15,9);
+load(16,10);
+load(17,11);
+load(18,12);
+load(19,13);
+load(20,14);
+load(21,15);
+load(22,16);
+load(23,17);
+load(24,18);
+//print("FAT,DF");
+load(5,19);
+load(6,20);
+//print("INIT");
+//load(25,21);
+//load(26,22);
+//load(27,23);
 
-//....................Exception Handler
+//print("swap");
+alias counter S0;			
+counter = 448;
+while ( counter <  512) do			
+	[ DISK_LIST + counter] = 0;	
+	counter = counter + 1;			
+endwhile;
+store(6,20);
 
-load (7, 1); //loading exception handler
-load (8, 2);
+//print("SWOFT init");
+counter = 0;
+while ( counter <  128) do			
+	[ FILE_TABLE + counter + 0] = -1;	
+	[ FILE_TABLE + counter + 1] =  0;	
+	counter = counter + 2;			
+endwhile;
 
-//...................Loading Process 0 on the memory
+//print("MF");
+counter = 0;
+while ( counter < 29 ) do			
+	[ 1280 + counter] = 1;	
+	counter = counter + 1;			
+endwhile;
+[1280 + 25]=0;
+[1280 + 26]=0;
+[1280 + 27]=0;
+while ( counter < 64 ) do			
+	[ 1280 + counter] = 0;	
+	counter = counter + 1;			
+endwhile;
 
-[READY_LIST + 0] = 0; //setting PID of init to 0
-alias PTBR_Process0 S1;
-PTBR_Process0 = 1024 + 0 * 8;
-[PTBR_Process0 + 0] = 21; //Copying physical memory address to page table
-[PTBR_Process0 + 1] = "00"; // copying auxillary information to page table
-[PTBR_Process0 + 2] = 22;
-[PTBR_Process0 + 3] = "00";
-[PTBR_Process0 + 4] = 23;
-[PTBR_Process0 + 5] = "00";
-[PTBR_Process0 + 6] = 25;
-[PTBR_Process0 + 7] = "01";
+//print("PCBs");
+counter=0;
+while ( counter < 32 ) do			
+	[ READY_LIST + 32*counter + 1] = 0;	
+//	[ READY_LIST + 32*counter + 0] = counter;	///////////////
+	counter = counter + 1;			
+endwhile;
 
-//.....................Setting up the PCB entry of the INIT process
 
-[READY_LIST + 1] = 2; //Setting the STATE in PCB as running
+//print("PID=0");
+[READY_LIST + 0] = 0;
+//print("init's");///////////////////////////////
+[READY_LIST + 1] = 2;
 [READY_LIST + 2] = 3*512;
-SP = 3*512;
-[READY_LIST + 3] = SP;
+[READY_LIST + 3] = 3*512;
 [READY_LIST + 4] = 0;
-[READY_LIST + 5] = PTBR_Process0;
+[READY_LIST + 5] = 1024;
 [READY_LIST + 6] = 4;
-[25*512] = 0; //Setting up IP for init in the stack
-
-//.....................Setting up the Per-Process File Open table
-[READY_LIST + 15] = -1;
-[READY_LIST + 16] = -1;
-[READY_LIST + 17] = -1;
-[READY_LIST + 18] = -1;
-[READY_LIST + 19] = -1;
-[READY_LIST + 20] = -1;
-[READY_LIST + 21] = -1;
-[READY_LIST + 22] = -1;
-[READY_LIST + 23] = -1;
-[READY_LIST + 24] = -1;
-[READY_LIST + 25] = -1;
-[READY_LIST + 26] = -1;
-[READY_LIST + 27] = -1;
-[READY_LIST + 28] = -1;
-[READY_LIST + 29] = -1;
-[READY_LIST + 30] = -1;
-
-//..................Setting up the Parent process for INIT
-
+//print("PPID=0");
 [READY_LIST + 31] = 0;
 
-PTBR = PTBR_Process0;
-PTLR = 4;
+//print("PTBR");
+PTBR=1024;
+PTLR=4;
+[PTBR+0]=21;
+[PTBR+1]="00";
+[PTBR+2]=22;
+[PTBR+3]="00";
+[PTBR+4]=23;
+[PTBR+5]="00";
+[PTBR+6]=28;
+[PTBR+7]="01";
 
-//....................Initializing all PCBs with state 0
-
-alias counter S0;
-counter = 0;
-while (counter < 32) do
-  [READY_LIST + (32*counter) + 1] = 0;
-  counter = counter + 1;
+//print("PPOFT");
+alias count S0;
+count=15;
+while(count<31)do
+	[READY_LIST+count]=-1;
+	count=count+1;
 endwhile;
 
-//....................Making STATE of Init as 2
-
- [READY_LIST + 1] = 2;
-
-//....................Loading FAT and df to memory
-
-load (5, 19);
-load (6, 20);
-
-//.....................Interrupt 1 Routine
-
-load (11, 5);
-load (12, 6);
-
-//.....................Interrupt 2 Routine
-
-load (13, 7);
-load (14, 8);
-
-//.....................Interrupt 3 Routine
-
-load (15, 9);
-load (16, 10);
-
-//.....................Interrupt 4 Routine
-
-load (17, 11);
-load (18, 12);
-
-//.....................Interrupt 5 Routine
-
-load (19, 13);
-load (20, 14);
-
-//.....................Interrupt 6 Routine
-
-load (21, 15);
-load (22, 16);
-
-//..................Interrupt 7 Routine
-
-load (23, 17); //loading interrupt 7 routine
-load (24, 18);
-
-//......................Timer Interrupt
-
-load (9, 3); //loading timer interrupt
-load (10, 4);
-
-//.....................Setting up the System-Wide Open File table
-
-counter = 0;
-while (counter < 128) do
-  [FILE_TABLE + counter + 0] = -1;
-  [FILE_TABLE + counter + 1] = 0;
-  counter = counter + 2;
-endwhile;
-
-//....................Setting up the memory free list
-
-counter = 0;
-while (counter <= 25) do
-  [MEM_LIST + counter] = 1;
-  counter = counter + 1;
-endwhile;
-while (counter < 64) do
-  [MEM_LIST + counter] = 0;
-  counter = counter + 1;
-endwhile;
-
-//...................Clearing swap areas
-
-counter = 448;
-while (counter < 512) do
-  [DISK_LIST + counter] = 0;
-  counter = counter + 1;
-endwhile;
-
-//...................Saving the df back to disk
-
-store(6, 20);
-
-print("OS done");
-breakpoint;
+//print("SP,IP");
+SP=3*512;
+[28*512]=0;
+//print("!OS");
 ireturn;

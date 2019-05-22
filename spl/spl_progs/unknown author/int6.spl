@@ -1,0 +1,125 @@
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+
+//Getting system call number from stack
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+//....................Implementation of Exec.............................
+
+if (sysCallNo == 9) then
+  alias filename S2;
+  filename = [physicalSP - 3];
+
+  //Checking if the file exists
+
+  alias i S3;
+  i = 0;
+  while (i < 64) do
+    if ([i + FAT] == filename) then
+      break;
+    endif;
+    i = i + 8;
+  endwhile;
+  if (i == 64) then
+    print ("No file");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Loading the basic block of file to scratchpad
+
+  alias basicBlock S4;
+  basicBlock = [FAT + i + 2];
+  if (basicBlock == -1) then
+    print("Invalid Block");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+  load(1, basicBlock);
+
+  //Doing work for Stage 10
+
+  i = 0;
+  while (i < 3) do
+    if ([PTBR + (2 * i) + 1] == "01" || [PTBR + (2 * i) + 1] == "11") then
+      [MEM_LIST + [PTBR + (2 * i) + 0]] = [MEM_LIST + [PTBR + (2 * i) + 0]] - 1;
+    endif;
+    if ([PTBR + (2 * i) + 1] == "00" || [PTBR + (2 * i) + 1] == "10") then
+      if ([PTBR + (2 * i) + 0] >= 448) then
+        [DISK_LIST + [PTBR + (2 * i) + 0]] = [DISK_LIST + [PTBR + (2 * i) + 0]] - 1;
+      endif;
+    endif;
+    i = i + 1;
+  endwhile;
+
+  //Copying disk blocks to page table
+
+  i = 0;
+  while (i < 3) do
+    if ([SCRATCHPAD + i] != "" && [SCRATCHPAD + i] != -1) then
+      [PTBR + (2 * i) + 0] = [SCRATCHPAD + i]; //in scratchpad, the basic block is loaded
+      [PTBR + (2 * i) + 1] = "00";
+    else
+      [PTBR + (2 * i) + 0] = -1;
+      [PTBR + (2 * i) + 1] = "00";
+    endif;
+    i = i + 1;
+  endwhile;
+
+  //Closing all open instances of a file
+
+  //print ("Closing files");
+  alias PID S9;
+  PID = (PTBR - 1024)/8; //Getting the PID of the process
+  alias sysFileTable S10;
+  alias fileDescriptor S11;
+  fileDescriptor = 0;
+  while (fileDescriptor < 8) do
+    sysFileTable = [READY_LIST + 32 * PID + (2 * fileDescriptor) + 15]; //From PCB
+    if (sysFileTable == -1) then
+      fileDescriptor = fileDescriptor + 1;
+    else
+      [sysFileTable + 1] = [sysFileTable + 1] - 1;
+      if ([sysFileTable + 1] == 0) then
+        [sysFileTable] = -1;
+      endif;
+      sysFileTable = -1;
+      fileDescriptor = fileDescriptor + 1;
+    endif;
+  endwhile;
+
+//print ("All files closed");
+breakpoint;
+  SP = 3 * 512;
+
+  alias newSP S12;
+  newSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+  [newSP] = 0;
+  //[physicalSP] = 0;
+  //[physicalSP - 2] = 0;
+  ireturn;
+
+endif;
+
+//.........................Implementation of Getpid...........................
+
+if (sysCallNo == 11) then
+  alias PID S2;
+  PID = (PTBR - 1024) / 8;
+  [physicalSP - 2] = PID;
+  ireturn;
+endif;
+
+//........................Implementation of Getppid............................
+
+if (sysCallNo == 12) then
+  alias PID S2;
+  PID = (PTBR - 1024) / 8;
+  [physicalSP - 2] = [READY_LIST + (2 * PID) + 31];
+  ireturn;
+endif;
+
+[physicalSP - 2] = -1;
+ireturn;

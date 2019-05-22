@@ -1,6 +1,6 @@
 set +e
 echo "################################################################################################################################"
-find . -iname "*~" -print -exec rm {} \;	#removing backup files
+#find . -iname "*~" -print -exec rm {} \;	#to remove backup files
 
 echo "compiling"
 echo "spls"
@@ -152,6 +152,6 @@ echo "loading to disk"
 
 
 cd ..
-echo "starting XOS"
+echo "starting XOS with timer set to 10"
 xsm/xsm  -t=10 
 

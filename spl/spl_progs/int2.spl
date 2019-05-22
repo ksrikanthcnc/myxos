@@ -1,127 +1,219 @@
-alias physicalSP S0;
-physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+//print("-------------------");
+//print("In INT 2");
 
-//Getting System Call number from the stack
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
 alias sysCallNo S1;
-sysCallNo = [physicalSP - 1];
+sysCallNo=[physicalSP-1];
 
-//Conditions
+alias filename S2;
+filename=[physicalSP-3];//////////////////////////////
 
-//...........................Implementation of Open.........................
+alias FATphysical S3;
+alias SWOFTphysical S4;
+alias PPOFTphysical S5;
+alias currentPID S6;
+alias currentPCB S7;
+alias FATindex S8;
+alias SWOFTindex S9;
+alias PPOFTindex S10;
 
-if (sysCallNo == 2) then
-  alias filename S2;
-  filename = [physicalSP - 3]; //Getting the argument from stack
+//Open()
+if(sysCallNo==2)then
+//print("OPEN");
+//print("exist?");
+	currentPID = (PTBR - 1024) / 8;
+	currentPCB = READY_LIST + 32 * currentPID;
 
-  //Checking if the file already exists
+	FATphysical=FAT;
+	while(FATphysical<FAT+512&&[FATphysical+0]!=filename)do
+		FATphysical=FATphysical+8;
+	endwhile;
+	
+	if(FATphysical>=FAT+512)then
+		//print("!exist");
+//
+print("");
+		print("**Files**");
+		FATphysical=FAT;		
+		while(FATphysical<FAT+512)do
+			if([FATphysical]!=-1)then
+				print([FATphysical]);
+			endif;
+			FATphysical=FATphysical+8;
+		endwhile;
+print("");
+//
+//
+if(filename=="")then
+	print("");
+	alias i S15;
+	print("**Open**");
+		print("file");
+		print("index");
+		print("~~~~~");
+	i=0;
+	while(i<8)do
+		PPOFTindex=i;
+		PPOFTphysical=currentPCB+15;
+		PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+		if([PPOFTphysical]==-1)then
+			i=i+1;
+			continue;
+		endif;
+		SWOFTphysical=1344;
+		SWOFTindex=[PPOFTphysical];
+		SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+		print([FAT+[SWOFTphysical]*8]);
+		print(PPOFTindex);
+		print("~~~~~");
+		i=i+1;
+	endwhile;
+	print("");
+endif;
+//
 
-  alias FATentry S3;
-  FATentry = FAT + 0;
-  while (FATentry < FAT + 512) do
-    if ([FATentry] == filename) then
-      break;
-    endif;
-    FATentry = FATentry + 8;
-  endwhile;
-  if (FATentry == FAT + 512) then
-    print("File doesn't exist");
-    [physicalSP - 2] = -1;
-    ireturn;
-  endif;
-
-  //Check if there is space in System-Wide Open File table
-  //and get the location in it to put an entry for the file
-
-  alias sysFileTable S4;
-  sysFileTable = FILE_TABLE + 0;
-  while (sysFileTable < FILE_TABLE + 128) do
-    if ([sysFileTable] == FATentry) then
-      print("File is already open\n");
-      break;
-    endif;
-    if ([sysFileTable] == -1) then
-      break;
-    endif;
-    sysFileTable = sysFileTable + 2;
-  endwhile;
-  if (sysFileTable == FILE_TABLE + 128) then
-    print("No space in System File Table");
-    [physicalSP - 2] = -1;
-    ireturn;
-  endif;
-
-  //Checking if per-process file open table is not full
-  //per-process file table exists in PCB
-
-  alias PID S5;
-  PID = (PTBR - 1024)/8;
-  alias i S6;
-  i = 15;
-  while (i < 31) do
-    if ([READY_LIST + 32 * PID + i] == -1) then
-      break;
-    endif;
-    i = i + 1;
-  endwhile;
-  if (i == 31) then
-    print("Per-process file table is full");
-    [physicalSP - 2] = -1;
-    ireturn;
-  endif;
-
-  //Entering details into the PCB (per-process file table)
-  //and system-wide open file table
-
-  [READY_LIST + 32 * PID + i] = sysFileTable;
-  [READY_LIST + 32 * PID + (i+1)] = 0; //Setting the LSEEK position
-  [sysFileTable] = FATentry;
-  [sysFileTable + 1] = [sysFileTable + 1] + 1;
-  [physicalSP - 2] = (i - 15)/2; //sysFileTable;
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+	
+	FATindex=(FATphysical%512)/8;
+//print("open?");
+	SWOFTphysical=1344;
+	while(SWOFTphysical<1472&&[SWOFTphysical]!=FATindex)do
+		SWOFTphysical=SWOFTphysical+2;
+	endwhile;
+	
+	if(SWOFTphysical>=1472)then
+		//print("SWOFT?(-1)");
+		SWOFTphysical=1344;	
+		while([SWOFTphysical]!=-1&&SWOFTphysical<1472)do
+			SWOFTphysical=SWOFTphysical+2;
+		endwhile;
+		if(SWOFTphysical>=1472)then
+			//print("SWOFT!(-1)");
+			[physicalSP-2]=-1;
+			ireturn;
+		endif;
+	endif;
+	SWOFTindex=(SWOFTphysical-1344)/2;
+	
+//print("PPOFT?");
+	PPOFTphysical=currentPCB+15;
+	PPOFTindex=0;
+	while(PPOFTphysical<currentPCB+31&&[PPOFTphysical]!=-1)do
+		PPOFTphysical=PPOFTphysical+2;
+		PPOFTindex=PPOFTindex+1;
+	endwhile;
+	
+	if(PPOFTphysical>currentPCB+30)then
+		//print("!PPOFT");
+//
+print("");
+print("**Close any**");
+currentPID = (PTBR - 1024) / 8;
+currentPCB = READY_LIST + 32 * currentPID;
+alias i S15;
+i=0;
+while(i<8)do
+	PPOFTindex=i;
+	PPOFTphysical=currentPCB+15;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+	if([PPOFTphysical]==-1)then
+		i=i+1;
+		continue;
+	endif;
+	SWOFTphysical=1344;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+	print("---");
+	print("filename");
+	print([FAT+[SWOFTphysical]*8]);
+	print("index");
+	print(PPOFTindex);
+	i=i+1;
+endwhile;
+print("");
+//
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("set PPOFT");
+	[PPOFTphysical]=SWOFTindex;
+	[PPOFTphysical+1]=0;
+//print("set SWOFT");	
+	[SWOFTphysical]=FATindex;
+	[SWOFTphysical+1]=[SWOFTphysical+1]+1;	
+	[physicalSP-2]=PPOFTindex;
+//print("!OPEN");
+	ireturn;
 endif;
 
-//...........................Implementation of Close.........................
+if(sysCallNo==3)then
+//Close()
+//if(sysCallNo==3)then
+//print("CLOSE");
+//print("valid?");
+	if(filename<0||filename>7)then
+		//print("invalid");
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("PPOFT?");
+	currentPID = (PTBR - 1024) / 8;	
+	currentPCB = READY_LIST + 32 * currentPID;
+	PPOFTindex=filename;
+	PPOFTphysical=currentPCB+15;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+	if([PPOFTphysical]==-1)then
+		//print("!PPOFT");
+//
+print("");
+print("**Close any**");
+currentPID = (PTBR - 1024) / 8;
+currentPCB = READY_LIST + 32 * currentPID;
+alias i S15;
+i=0;
+while(i<8)do
+	PPOFTindex=i;
+	PPOFTphysical=currentPCB+15;
+	PPOFTphysical=PPOFTphysical+2*PPOFTindex;
+	if([PPOFTphysical]==-1)then
+		i=i+1;
+		continue;
+	endif;
+	SWOFTphysical=1344;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+	print("---");
+	print("filename");
+	print([FAT+[SWOFTphysical]*8]);
+	print("index");
+	print(PPOFTindex);
+	i=i+1;
+endwhile;
+print("");
+//
+		[physicalSP-2]=-1;
+		ireturn;
+	endif;
+//print("SWOFT");
+	SWOFTphysical=1344;
+	SWOFTindex=[PPOFTphysical];
+	SWOFTphysical=SWOFTphysical+2*SWOFTindex;
+//print("SWOFT--");
+	[SWOFTphysical+1]=[SWOFTphysical+1]-1;
+	if([SWOFTphysical+1]==0)then
+		//print("file=0");
+		[SWOFTphysical]=-1;
+	endif;
+//print("PPOFT=-1");	
+	[PPOFTphysical]=-1;
+	[PPOFTphysical+1]=-1;
 
-if (sysCallNo == 3) then
-  alias fileDescriptor S2;
-  fileDescriptor = [physicalSP - 3]; //Getting the argument from stack
-
-  //Checking if fileDescriptor is valid.. It has a value between 0-7
-
-  alias i S3;
-  i = 0;
-  while (i < 8) do
-    if (i == fileDescriptor) then
-      break;
-    endif;
-    i = i + 1;
-  endwhile;
-  if (i == 8) then
-    print ("Invalid File");
-    [physicalSP - 2] = -1;
-    ireturn;
-  endif;
-
-  //Checking if the file is open in the System-Wide Open File table
-
-  alias PID S3;
-  PID = (PTBR - 1024)/8; //Getting the PID of the process
-  alias sysFileTable S4;
-  sysFileTable = [READY_LIST + 32 * PID + (2 * fileDescriptor) + 15]; //From PCB
-  if (sysFileTable == -1) then
-    print ("Failure");
-    [physicalSP - 2] = -1;
-    ireturn;
-  endif;
-
-  //Decrementing count in System-Wide Open File table
-
-  [sysFileTable + 1] = [sysFileTable + 1] - 1;
-  if ([sysFileTable + 1] == 0) then
-    [sysFileTable] = -1;
-  endif;
-  sysFileTable = -1;
-  [physicalSP - 2] = 0; //Success
+	[physicalSP-2]=0;
+	
+	ireturn;
+	
 endif;
-
-ireturn;

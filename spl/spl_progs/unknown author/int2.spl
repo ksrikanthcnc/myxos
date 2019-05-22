@@ -1,0 +1,127 @@
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+
+//Getting System Call number from the stack
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+//Conditions
+
+//...........................Implementation of Open.........................
+
+if (sysCallNo == 2) then
+  alias filename S2;
+  filename = [physicalSP - 3]; //Getting the argument from stack
+
+  //Checking if the file already exists
+
+  alias FATentry S3;
+  FATentry = FAT + 0;
+  while (FATentry < FAT + 512) do
+    if ([FATentry] == filename) then
+      break;
+    endif;
+    FATentry = FATentry + 8;
+  endwhile;
+  if (FATentry == FAT + 512) then
+    print("File doesn't exist");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Check if there is space in System-Wide Open File table
+  //and get the location in it to put an entry for the file
+
+  alias sysFileTable S4;
+  sysFileTable = FILE_TABLE + 0;
+  while (sysFileTable < FILE_TABLE + 128) do
+    if ([sysFileTable] == FATentry) then
+      print("File is already open\n");
+      break;
+    endif;
+    if ([sysFileTable] == -1) then
+      break;
+    endif;
+    sysFileTable = sysFileTable + 2;
+  endwhile;
+  if (sysFileTable == FILE_TABLE + 128) then
+    print("No space in System File Table");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Checking if per-process file open table is not full
+  //per-process file table exists in PCB
+
+  alias PID S5;
+  PID = (PTBR - 1024)/8;
+  alias i S6;
+  i = 15;
+  while (i < 31) do
+    if ([READY_LIST + 32 * PID + i] == -1) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == 31) then
+    print("Per-process file table is full");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Entering details into the PCB (per-process file table)
+  //and system-wide open file table
+
+  [READY_LIST + 32 * PID + i] = sysFileTable;
+  [READY_LIST + 32 * PID + (i+1)] = 0; //Setting the LSEEK position
+  [sysFileTable] = FATentry;
+  [sysFileTable + 1] = [sysFileTable + 1] + 1;
+  [physicalSP - 2] = (i - 15)/2; //sysFileTable;
+endif;
+
+//...........................Implementation of Close.........................
+
+if (sysCallNo == 3) then
+  alias fileDescriptor S2;
+  fileDescriptor = [physicalSP - 3]; //Getting the argument from stack
+
+  //Checking if fileDescriptor is valid.. It has a value between 0-7
+
+  alias i S3;
+  i = 0;
+  while (i < 8) do
+    if (i == fileDescriptor) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == 8) then
+    print ("Invalid File");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Checking if the file is open in the System-Wide Open File table
+
+  alias PID S3;
+  PID = (PTBR - 1024)/8; //Getting the PID of the process
+  alias sysFileTable S4;
+  sysFileTable = [READY_LIST + 32 * PID + (2 * fileDescriptor) + 15]; //From PCB
+  if (sysFileTable == -1) then
+    print ("Failure");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+  //Decrementing count in System-Wide Open File table
+
+  [sysFileTable + 1] = [sysFileTable + 1] - 1;
+  if ([sysFileTable + 1] == 0) then
+    [sysFileTable] = -1;
+  endif;
+  sysFileTable = -1;
+  [physicalSP - 2] = 0; //Success
+endif;
+
+ireturn;
